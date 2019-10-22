@@ -4,14 +4,17 @@ class DB{
 
     private static $instance = null;
     private $connection;
-    
+    private $connection_prepare;
+    private $error;
+    private $results;
+    private $count = 0;
 
     private function __construct(){
 
         $host = 'localhost';
         $user = 'root';
         $pass = '';
-        $db = 'fakultet';
+        $db = 'algebra_contacts';
         $dsn = "mysql:dbname=$db;host=$host";
 
         try {
@@ -31,25 +34,114 @@ class DB{
         return self::$instance;
     }
 
-    public function action($query){
-        
-        $result = $this->connection->prepare($query);
+    private function action($action, $table, $where = array()){
 
-        $result->execute();
+        if ($where) {
+            $field = $where[0];
+            $operator = $where[1];
+            $value = $where[2];
 
-        return $result->fetchAll(PDO::FETCH_OBJ);
-        return $result->fetchAll(PDO::FETCH_ASSOC);
+            $sql = "$action FROM $table WHERE $field $operator ?";
+            if(!$this->query($sql, array($value))->error){
+                return $this;
+            }
+            
+        }else{
+            $sql = "$action FROM $table";
+            if(!$this->query($sql)->error){
+                return $this;
+            }
+        }
+        return false;
     }
 
+    private function query($sql, $params = array()){
+
+        $this->error = false;
+
+        if($this->connection_prepare = $this->connection->prepare($sql)){
+
+            $counter = 1;
+            if (!empty($params)) {
+                foreach ($params as $param) {
+                    $this->connection_prepare->bindValue($counter, $param);
+                    $counter++;
+                }
+            }
+            if ($this->connection_prepare->execute()) {
+                $this->results = $this->connection_prepare->fetchAll(PDO::FETCH_OBJ);
+                $this->count = $this->connection_prepare->rowCount();
+            }else{
+                $this->error = true;
+                die($this->connection_prepare->errorInfo()[2]);
+            }
+        }
+        return $this;
+    }
+
+    public function delete($table, $where){
+        return $this->action('DELETE', $table, $where);
+    }
+
+    public function select($fields, $table, $where = array()){
+        return $this->action("SELECT $fields", $table, $where);
+    }
+
+    public function insert($table, $columns){
+        // INSERT INTO users (name,username,password) VALUES ('?','?','?');
+        $sql = "INSERT INTO $table ($columns->ključevi) VALUES ($columns->vrijednosti)";
+
+        //DZ - složiti $sql i $values array sa vrijednostima
+
+        if(!$this->query($sql, $values)->error){
+            return $this;
+        }
+        return false;
+    }
+
+    /* GETTERI */
+    public function error(){
+        return $this->error;
+    }
+    public function results(){
+        return $this->results;
+    }
+    public function count(){
+        return $this->count;
+    }
+
+    
+
+
+
 }
 
-// $db = new DB(); => OVO NE
 $db = DB::getInstance();
-$result = $db->action("select imeStud,prezStud from stud where imeStud = 'Zdenko'");
+//$result = $db->delete('users', ['id', '=', 1]);
+//$result = $db->select('name', 'users', ['id', '=', 3]);
+//$result = $db->select('*', 'users');
+var_dump($result);
 
-//var_dump($result);
 
-foreach ($result as $key => $student) {
-   // echo "<p>$student[imeStud]</p>";
-    echo "<p>$student->imeStud</p>";
-}
+$result = $db->insert('users', [
+    'username'  => 'alex',
+    'password'  => 'pass',
+    'salt'      => 'asdfasdasdasdsadas',
+    'name'      => 'Aleksandar',
+    'role_id'   => 1
+])
+
+
+
+
+
+
+
+    /*
+    public function deleteStudentById($mbrStud){
+        return $this->action("DELETE FROM stud WHERE mbrStud = $mbrStud");
+    }
+    public function deleteById($table, $id){
+        return $this->action("DELETE FROM $table WHERE id = $id");
+    }
+    */
