@@ -8,18 +8,23 @@ class DB{
     private $error;
     private $results;
     private $count = 0;
+    private $config;
 
     private function __construct(){
 
-        $host = 'localhost';
-        $user = 'root';
-        $pass = '';
-        $db = 'algebra_contacts';
-        $dsn = "mysql:dbname=$db;host=$host";
+        $this->config = Config::get('database');
+        $driver = $this->config['driver'];
+
+        $host = $this->config[$driver]['host'];
+        $user = $this->config[$driver]['user'];
+        $pass = $this->config[$driver]['pass'];
+        $db = $this->config[$driver]['db'];
+        $charset = $this->config[$driver]['charset'];
+        $dsn = "$driver:dbname=$db;host=$host";
 
         try {
             $this->connection = new PDO($dsn,$user,$pass);
-            echo "Connected successfully";
+            //echo "Connected successfully";
         } catch (PDOException $e) {
             die($e->getMessage());
         }
@@ -69,7 +74,7 @@ class DB{
                 }
             }
             if ($this->connection_prepare->execute()) {
-                $this->results = $this->connection_prepare->fetchAll(PDO::FETCH_OBJ);
+                $this->results = $this->connection_prepare->fetchAll(Config::get('database')['fetch']);
                 $this->count = $this->connection_prepare->rowCount();
             }else{
                 $this->error = true;
@@ -88,7 +93,7 @@ class DB{
     }
 
     public function insert($table, $columns){
-        // INSERT INTO users (name,username,password) VALUES ('?','?','?');
+        // INSERT INTO users (name,username,password) VALUES (?,?,?);
         $sql = "INSERT INTO $table ($columns->ključevi) VALUES ($columns->vrijednosti)";
 
         //DZ - složiti $sql i $values array sa vrijednostima
@@ -97,6 +102,10 @@ class DB{
             return $this;
         }
         return false;
+    }
+
+    public function update($table, $id, $fields){
+        // UPDATE $table SET $fields WHERE id=$id;
     }
 
     /* GETTERI */
@@ -120,16 +129,20 @@ $db = DB::getInstance();
 //$result = $db->delete('users', ['id', '=', 1]);
 //$result = $db->select('name', 'users', ['id', '=', 3]);
 //$result = $db->select('*', 'users');
-var_dump($result);
+//var_dump($result);
 
-
+/*
+DOMAĆA ZADAĆA
 $result = $db->insert('users', [
     'username'  => 'alex',
     'password'  => 'pass',
     'salt'      => 'asdfasdasdasdsadas',
     'name'      => 'Aleksandar',
     'role_id'   => 1
-])
+]);
+
+$result = $db->update('users', 3, "ime='Ivan'");
+*/
 
 
 
@@ -137,11 +150,11 @@ $result = $db->insert('users', [
 
 
 
-    /*
-    public function deleteStudentById($mbrStud){
-        return $this->action("DELETE FROM stud WHERE mbrStud = $mbrStud");
-    }
-    public function deleteById($table, $id){
-        return $this->action("DELETE FROM $table WHERE id = $id");
-    }
-    */
+/*
+public function deleteStudentById($mbrStud){
+    return $this->action("DELETE FROM stud WHERE mbrStud = $mbrStud");
+}
+public function deleteById($table, $id){
+    return $this->action("DELETE FROM $table WHERE id = $id");
+}
+*/
