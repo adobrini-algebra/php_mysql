@@ -93,12 +93,25 @@ class DB{
     }
 
     public function insert($table, $columns){
+
+        $keys = array_keys($columns);
+        $keys = implode(',', $keys);
+        $questionmarks = '';
+        $arr_lenght = count($columns);
+        $counter = 1;
+
+        foreach ($columns as $key => $value) {
+            $questionmarks .= '?';
+            if ($counter < $arr_lenght ) {
+                $questionmarks .= ',';
+            }
+            $counter++;
+        }
         // INSERT INTO users (name,username,password) VALUES (?,?,?);
-        $sql = "INSERT INTO $table ($columns->ključevi) VALUES ($columns->vrijednosti)";
-
         //DZ - složiti $sql i $values array sa vrijednostima
+        $sql = "INSERT INTO $table ($keys) VALUES ($questionmarks)";
 
-        if(!$this->query($sql, $values)->error){
+        if(!$this->query($sql, $columns)->error){
             return $this;
         }
         return false;
@@ -131,8 +144,9 @@ $db = DB::getInstance();
 //$result = $db->select('*', 'users');
 //var_dump($result);
 
-/*
-DOMAĆA ZADAĆA
+
+//DOMAĆA ZADAĆA
+
 $result = $db->insert('users', [
     'username'  => 'alex',
     'password'  => 'pass',
@@ -140,7 +154,7 @@ $result = $db->insert('users', [
     'name'      => 'Aleksandar',
     'role_id'   => 1
 ]);
-
+/*
 $result = $db->update('users', 3, "ime='Ivan'");
 */
 
