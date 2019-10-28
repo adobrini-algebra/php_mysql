@@ -118,10 +118,27 @@ class DB{
     }
 
     public function update($table, $id, $fields){
-        // UPDATE $table SET $fields WHERE id=$id;
+
+        $questionmarks = '';
+        $arr_lenght = count($fields);
+        $counter = 1;
+
+        foreach ($fields as $key => $value) {
+            $questionmarks .= "$key=?";
+            if ($counter < $arr_lenght ) {
+                $questionmarks .= ',';
+            }
+            $counter++;
+        }
+
+        $sql = "UPDATE $table SET $questionmarks WHERE id=$id";
+
+        if(!$this->query($sql, $fields)->error){
+            return $this;
+        }
+        return false;
     }
 
-    /* GETTERI */
     public function error(){
         return $this->error;
     }
@@ -131,44 +148,7 @@ class DB{
     public function count(){
         return $this->count;
     }
-
-    
-
-
-
+    public function first(){
+        return $this->results[0];
+    }
 }
-
-$db = DB::getInstance();
-//$result = $db->delete('users', ['id', '=', 1]);
-//$result = $db->select('name', 'users', ['id', '=', 3]);
-//$result = $db->select('*', 'users');
-//var_dump($result);
-
-
-//DOMAĆA ZADAĆA
-
-$result = $db->insert('users', [
-    'username'  => 'alex',
-    'password'  => 'pass',
-    'salt'      => 'asdfasdasdasdsadas',
-    'name'      => 'Aleksandar',
-    'role_id'   => 1
-]);
-/*
-$result = $db->update('users', 3, "ime='Ivan'");
-*/
-
-
-
-
-
-
-
-/*
-public function deleteStudentById($mbrStud){
-    return $this->action("DELETE FROM stud WHERE mbrStud = $mbrStud");
-}
-public function deleteById($table, $id){
-    return $this->action("DELETE FROM $table WHERE id = $id");
-}
-*/
