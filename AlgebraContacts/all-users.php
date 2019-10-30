@@ -6,6 +6,8 @@ Helper::getHeader();
 
 $users = DB::getInstance()->select('*', 'users')->results();
 
+include_once 'notifications.php';
+
 ?>
 
 <div class="row">

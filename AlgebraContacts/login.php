@@ -4,6 +4,8 @@ require_once 'core/init.php';
 
 Helper::getHeader();
 
+// DZ napraviti validaciju za login kao u register
+
 ?>
 
 <div class="row m-5">
