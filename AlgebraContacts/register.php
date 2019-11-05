@@ -2,6 +2,11 @@
 
 require_once 'core/init.php';
 
+$user = new User();
+if ($user->check()) {
+    Redirect::to('index');
+}
+
 Helper::getHeader();
 
 $validation = new Validation();
@@ -22,7 +27,7 @@ if (Input::exists()) {
         ],
         'password'   => [
             'required'  => true,
-            'min'       => 7,
+            'min'       => 2,
             'pattern'   => true
         ],
         'password_confirmation'   => [
@@ -50,11 +55,8 @@ if (Input::exists()) {
             return false;
         }
         Session::flash('success', 'You registred successfully');
-        Redirect::to('all-users');
+        Redirect::to('login');
     }
-
-
-    
 }
 
 include_once 'notifications.php';

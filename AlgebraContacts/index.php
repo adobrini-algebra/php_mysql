@@ -2,6 +2,8 @@
 
 require_once 'core/init.php';
 
+$user = new User();
+
 Helper::getHeader();
 
 ?>

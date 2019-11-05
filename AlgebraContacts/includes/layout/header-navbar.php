@@ -27,12 +27,24 @@
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
+      <?php
+        $user = new User();
+        if(!$user->check()){
+      ?>
       <li class="nav-item">
         <a href="login.php" class="nav-link">Sign In</a>
       </li>
       <li class="nav-item">
         <a href="register.php" class="nav-link">Create an Account</a>
       </li>
+      <?php
+      }else{echo $user->data()->name;
+        ?>
+        
+      <?php
+      }
+      ?>
+
     </ul>
   </div>
 </nav>

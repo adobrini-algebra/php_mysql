@@ -38,18 +38,19 @@ class Validation{
                             }
                             break;
                         case 'matches':
-                            # DZ - provjeriti da li se polje password i polje password_confirmation
-                            # podudaraju, ako  ne upisati grešku
-                            # pripazit da vrijedi za sve forme!!!
+                            if ($input_value != Input::get($rule_value)) {
+                                $this->addError($input, "Field $input must match field $rule_value");
+                            }
                             break;
+                            /*
                         case 'pattern':
-                        /*
+                        echo Config::get('app')['register_password_regex'];
+                        die($input_value);
                             if (!preg_match(Config::get('app')['register_password_regex'], $input_value)) {
                                 $this->addError($input, "Field $input must include at least one Upper case and one Lower case, one number and one special character.");
-                            }*/
-                            // DZ - provjeriti uvjet za password sa php ugradenim funkcijama
-                            // ctype_alnum()
+                            }
                             break;
+                            */
            
                     }
                 }

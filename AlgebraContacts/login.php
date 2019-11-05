@@ -4,7 +4,34 @@ require_once 'core/init.php';
 
 Helper::getHeader();
 
-// DZ napraviti validaciju za login kao u register
+$validation = new Validation();
+$user = new User();
+
+if (Input::exists()) {
+
+    $validate = $validation->check([
+        'username'  => [
+            'required'  => true
+        ],
+        'password'   => [
+            'required'  => true        
+        ]
+    ]);
+
+    if($validate->passed()){
+
+        $login = $user->login(Input::get('username'), Input::get('password'));
+
+        if ($login) {
+            Redirect::to('dashboard');
+        }else{
+            Session::flash('danger', 'Sorry, login failde! Please Try again');
+            Redirect::to('login');
+        }
+    }
+}
+
+include_once 'notifications.php';
 
 ?>
 
@@ -12,7 +39,7 @@ Helper::getHeader();
     <div class="card col-lg-6 offset-lg-3">
         <h5 class="card-title pt-3">Log in</h5>
         <div class="card-body">
-            <form>
+            <form method="POST">
 
                 <div class="form-group">
                     <label for="username">Username</label>
