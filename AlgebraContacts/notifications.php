@@ -12,7 +12,7 @@ foreach ($sessions as $key => $msg) {
         case 'warning':
 ?>
         <div class="row">
-            <div class="clo-lg-12">
+            <div class="col-lg-12 mt-3">
                 <div class="alert alert-<?php echo $key ?> alert-dismissible fade show" role="alert">
                     <?php echo $msg ?>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">

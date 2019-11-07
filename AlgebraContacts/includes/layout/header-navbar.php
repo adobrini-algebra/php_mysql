@@ -22,13 +22,26 @@
       <li class="nav-item active">
         <a class="nav-link" href="index.php">Home <span class="sr-only">(current)</span></a>
       </li>
+
+      <?php
+        $user = new User();
+        if($user->check()){
+      ?>
+
+      <li class="nav-item">
+        <a class="nav-link" href="dashboard.php">Dashboard</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="all-users.php">Korisnici</a>
       </li>
+
+      <?php
+      }
+      ?>
+
     </ul>
     <ul class="navbar-nav ml-auto">
       <?php
-        $user = new User();
         if(!$user->check()){
       ?>
       <li class="nav-item">
@@ -38,9 +51,19 @@
         <a href="register.php" class="nav-link">Create an Account</a>
       </li>
       <?php
-      }else{echo $user->data()->name;
+      }else{
         ?>
-        
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+            <span class="glyphicon glyphicon-user">
+              <?php echo $user->data()->name; ?>
+            </span>
+            <span class="carret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item"> <a href="logout.php">Logout</a> </li>
+          </ul>
+        </li>
       <?php
       }
       ?>

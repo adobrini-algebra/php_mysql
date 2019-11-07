@@ -20,7 +20,8 @@ if (Input::exists()) {
 
     if($validate->passed()){
 
-        $login = $user->login(Input::get('username'), Input::get('password'));
+        $remember = (bool)Input::get('remember');
+        $login = $user->login(Input::get('username'), Input::get('password'), $remember);
 
         if ($login) {
             Redirect::to('dashboard');
@@ -43,12 +44,14 @@ include_once 'notifications.php';
 
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
+                    <input type="text" class="form-control <?php echo $validation->hasError('username') ? 'is-invalid' : '' ?>" id="username" name="username" placeholder="Enter your username">
+                    <?php echo $validation->hasError('username') ? '<p class=text-danger>'. $validation->hasError('username') . '</p>' : '' ?>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Choose password">
+                    <input type="password" class="form-control <?php echo $validation->hasError('password') ? 'is-invalid' : '' ?>" id="password" name="password" placeholder="Choose password">
+                    <?php echo $validation->hasError('password') ? '<p class=text-danger>'. $validation->hasError('password') . '</p>' : '' ?>
                 </div>
 
                 <div class="form-group form-check">
