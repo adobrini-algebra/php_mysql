@@ -8,26 +8,28 @@ $validation = new Validation();
 $user = new User();
 
 if (Input::exists()) {
+    if (Token::factory()->check(Input::get('token'))) {
 
-    $validate = $validation->check([
-        'username'  => [
-            'required'  => true
-        ],
-        'password'   => [
-            'required'  => true        
-        ]
-    ]);
+        $validation->check([
+            'username'  => [
+                'required'  => true
+            ],
+            'password'   => [
+                'required'  => true        
+            ]
+        ]);
 
-    if($validate->passed()){
+        if($validation->passed()){
 
-        $remember = (bool)Input::get('remember');
-        $login = $user->login(Input::get('username'), Input::get('password'), $remember);
+            $remember = (bool)Input::get('remember');
+            $login = $user->login(Input::get('username'), Input::get('password'), $remember);
 
-        if ($login) {
-            Redirect::to('dashboard');
-        }else{
-            Session::flash('danger', 'Sorry, login failde! Please Try again');
-            Redirect::to('login');
+            if ($login) {
+                Redirect::to('dashboard');
+            }else{
+                Session::flash('danger', 'Sorry, login failde! Please Try again');
+                Redirect::to('login');
+            }
         }
     }
 }
@@ -41,7 +43,7 @@ include_once 'notifications.php';
         <h5 class="card-title pt-3">Log in</h5>
         <div class="card-body">
             <form method="POST">
-
+                <input type="hidden" name="token" value="<?php echo Token::factory()->generate() ?>">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" class="form-control <?php echo $validation->hasError('username') ? 'is-invalid' : '' ?>" id="username" name="username" placeholder="Enter your username">

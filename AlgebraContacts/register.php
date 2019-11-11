@@ -12,31 +12,33 @@ Helper::getHeader();
 $validation = new Validation();
 
 if (Input::exists()) {
+    if (Token::factory()->check(Input::get('token'))) {
 
-    $validate = $validation->check([
-        'name'      => [
-            'required'  => true,
-            'min'       => 2,
-            'max'       => 30
-        ],
-        'username'  => [
-            'required'  => true,
-            'min'       => 2,
-            'max'       => 30,
-            'unique'    => 'users'
-        ],
-        'password'   => [
-            'required'  => true,
-            'min'       => 2,
-            'pattern'   => true
-        ],
-        'password_confirmation'   => [
-            'required'  => true,
-            'matches'   => 'password'
-        ]
-    ]);
+        $validation->check([
+            'name'      => [
+                'required'  => true,
+                'min'       => 2,
+                'max'       => 30
+            ],
+            'username'  => [
+                'required'  => true,
+                'min'       => 2,
+                'max'       => 30,
+                'unique'    => 'users'
+            ],
+            'password'   => [
+                'required'  => true,
+                'min'       => 2,
+                'pattern'   => true
+            ],
+            'password_confirmation'   => [
+                'required'  => true,
+                'matches'   => 'password'
+            ]
+        ]);
+    }
 
-    if($validate->passed()){
+    if($validation->passed()){
 
         $salt = Hash::salt();
         $password = Hash::make(Input::get('password'), $salt);
@@ -68,7 +70,7 @@ include_once 'notifications.php';
         <h5 class="card-title pt-3">Create an account</h5>
         <div class="card-body">
             <form method="POST">
-
+                <input type="hidden" name="token" value="<?php echo Token::factory()->generate() ?>">
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input type="text" class="form-control <?php echo $validation->hasError('name') ? 'is-invalid' : '' ?>" id="name" name="name" placeholder="Enter your full name">
